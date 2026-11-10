@@ -2,15 +2,89 @@
 
 Free NBA player prop research: hit rates, matchups, projections and line shopping. No account, no paywall, no API keys, no dependencies.
 
-## Run it
+## Run it locally
 
-Requires Node 20 or newer.
+### 1. Install Node.js
+
+You need Node.js 20 or newer. Check what you have:
+
+```bash
+node --version
+```
+
+If that prints `v20` or higher, skip ahead. Otherwise install the LTS version from [nodejs.org](https://nodejs.org), or on a Mac with Homebrew:
+
+```bash
+brew install node
+```
+
+There's nothing else to install. The app has no npm dependencies, so `npm install` isn't needed.
+
+### 2. Get the code
+
+The repo is private, so you need access to it and a GitHub login on your machine. The easiest way is the [GitHub CLI](https://cli.github.com):
+
+```bash
+gh auth login
+```
+
+```bash
+gh repo clone npatel0126/free-throw
+```
+
+Plain `git clone https://github.com/npatel0126/free-throw.git` works too if Git already has your GitHub credentials.
+
+### 3. Start the server
+
+Run these from inside the project folder. Running `npm start` anywhere else gives `Missing script: "start"`.
+
+```bash
+cd free-throw
+```
 
 ```bash
 npm start
 ```
 
-Then open http://127.0.0.1:3000. The first load can take up to a minute while box scores and game logs download. After that they're cached in `.cache/`.
+When you see `Free Throw is running at http://127.0.0.1:3000`, open that address in your browser.
+
+The first load takes up to a minute while the server downloads box scores and game logs. The Props page shows what it's loading in the meantime. After that the data is cached in `.cache/`, so later starts are fast.
+
+The board shows the next slate of games that haven't tipped off yet, looking up to a week ahead. In the offseason it can be empty.
+
+### 4. Stop it
+
+Press `Ctrl+C` in the terminal where it's running.
+
+### Options
+
+The server reads three environment variables:
+
+| Variable | Default | What it does |
+|---|---|---|
+| `PORT` | `3000` | Port to listen on |
+| `HOST` | `127.0.0.1` | Address to listen on. `0.0.0.0` accepts connections from other devices |
+| `CACHE_DIR` | `.cache/` | Where downloaded data is stored |
+
+For example, to use a different port:
+
+```bash
+PORT=4000 npm start
+```
+
+To open it on your phone, start it with `HOST=0.0.0.0 npm start`, then visit `http://<your computer's IP>:3000` from a phone on the same Wi-Fi. On a Mac, `ipconfig getifaddr en0` prints the IP.
+
+### Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| `npm error Missing script: "start"` | You're not in the project folder. `cd` into it first. |
+| `EADDRINUSE: address already in use` | Another copy is already running on that port. Stop it with `Ctrl+C`, or start this one with `PORT=4000 npm start`. |
+| Page stuck loading or showing errors | The app needs internet access to reach ESPN and Action Network. Check your connection and refresh. |
+| Old or odd-looking data | Stop the server, delete the `.cache/` folder, and start it again. |
+| `SyntaxError` or `Unexpected token` when starting | Your Node is too old. Upgrade to 20 or newer. |
+
+### Tests and backtest
 
 ```bash
 npm test
@@ -19,6 +93,12 @@ npm test
 ```bash
 npm run backtest
 ```
+
+`npm run backtest` replays this season's finished games against the real DraftKings lines and prints how the model would have done. The first run downloads a lot of box scores and can take several minutes.
+
+## Deploying
+
+The same `PORT`, `HOST` and `CACHE_DIR` settings apply. To accept outside connections, set `HOST=0.0.0.0` and put it behind a reverse proxy with HTTPS.
 
 ## Design
 
@@ -53,9 +133,5 @@ A projection is the player's recency-weighted production per minute, times expec
 The final estimate blends 15% of that projection with 85% of the mean implied by DraftKings' line. Those weights come from the first half of the backtest. The model alone is less accurate than the book, so it is never used alone.
 
 The model doesn't know about teammate absences, and the backtest has **not** shown a proven edge. Check the Track Record page, which recalculates as the season goes on, before trusting any estimate.
-
-## Deploying
-
-The server reads `PORT` and `HOST`. To accept outside connections, set `HOST=0.0.0.0`. The cache directory can be moved with `CACHE_DIR`.
 
 For research only. Must be 21+ and in a legal location to bet. If betting stops being fun, call 1-800-GAMBLER.

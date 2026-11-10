@@ -1,0 +1,13 @@
+{
+  "name": "freethrow",
+  "version": "1.0.0",
+  "description": "Free NBA player prop research: hit rates, matchups, projections and line shopping.",
+  "type": "module",
+  "private": true,
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node server/index.js",
+    "backtest": "node scripts/backtest.js",
+    "test": "node --test test/*.test.js"
+  }
+}

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Free Throw</title>
+  <meta name="description" content="Free NBA player prop research: hit rates, matchups, projections and line shopping.">
+  <meta name="theme-color" content="#0b0f1f">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;1,800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/app.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='14' fill='%23ff6b1a'/><path d='M2 16h28M16 2v28M6 6c5 5 5 15 0 20M26 6c-5 5-5 15 0 20' stroke='%230b0f1f' stroke-width='2' fill='none'/></svg>">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#/" aria-label="Free Throw home">
+      <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="#ff6b1a"/><path d="M1 16h30M16 1v30M6 5c5.500 6 5.500 16 0 22M26 5c-5.500 6-5.500 16 0 22" stroke="#0b0f1f" stroke-width="2"/></svg>
+      Free<span>Throw</span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a href="#/" data-nav="props">Props</a>
+      <a href="#/games" data-nav="games">Games</a>
+      <a href="#/lines" data-nav="lines">Lines</a>
+      <a href="#/matchups" data-nav="matchups">Matchups</a>
+      <a href="#/sheets" data-nav="sheets">Cheat Sheets</a>
+      <a href="#/calc" data-nav="calc">Calculators</a>
+      <a href="#/record" data-nav="record">Track Record</a>
+    </nav>
+    <div class="search">
+      <input id="search" type="search" placeholder="Find a player" autocomplete="off" aria-label="Find a player">
+      <div id="search-results" class="search-results" hidden></div>
+    </div>
+    <button id="slip-toggle" class="slip-toggle" type="button" aria-expanded="false">Slip <b id="slip-count">0</b></button>
+  </header>
+
+  <main id="view" tabindex="-1"></main>
+
+  <aside id="slip" class="slip" hidden aria-label="Bet slip"></aside>
+  <div id="tooltip" class="tooltip" hidden></div>
+
+  <footer class="footer">
+    <p>Free and research only. Lines come from DraftKings via ESPN and from Action Network; always confirm the price at your book before betting.</p>
+    <p>Must be 21+ and in a legal location to bet. If betting stops being fun, call 1-800-GAMBLER.</p>
+  </footer>
+
+  <script type="module" src="/js/main.js"></script>
+</body>
+</html>

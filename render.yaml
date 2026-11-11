@@ -1,0 +1,16 @@
+# Render Blueprint: runs the Node server as a free web service.
+# In Render: New > Blueprint, then pick this repo.
+services:
+  - type: web
+    name: free-throw
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      # Render sets PORT itself; the server must listen on all interfaces to receive traffic.
+      - key: HOST
+        value: 0.0.0.0
+      - key: NODE_VERSION
+        value: "22"

@@ -98,7 +98,23 @@ npm run backtest
 
 ## Deploying
 
-The same `PORT`, `HOST` and `CACHE_DIR` settings apply. To accept outside connections, set `HOST=0.0.0.0` and put it behind a reverse proxy with HTTPS.
+Free Throw needs a host that keeps a Node server running. Static or serverless hosts like Vercel and Netlify only publish the `public/` folder, so the page loads but every `/api/` request fails with "This page couldn't load".
+
+### Render (free)
+
+The repo includes a `render.yaml` that sets everything up.
+
+1. Sign in at [render.com](https://render.com) with GitHub and give Render access to this repo.
+2. Click **New > Blueprint**, pick `free-throw`, and click **Apply**.
+3. Wait for the first deploy to finish (a minute or two), then open the `onrender.com` address Render shows.
+
+Every push to `main` deploys again automatically.
+
+On the free plan the service sleeps after 15 minutes without visitors. The next visit takes about 30 seconds to wake it, and the board then takes up to a minute to rebuild because the cache doesn't survive restarts.
+
+### Anywhere else
+
+Any host that runs `npm start` works, such as Railway, Fly.io or your own server. Set `HOST=0.0.0.0` so the server accepts outside connections; most hosts set `PORT` for you. On your own server, put it behind a reverse proxy with HTTPS.
 
 ## Design
 

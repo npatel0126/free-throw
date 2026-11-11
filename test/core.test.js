@@ -6,7 +6,7 @@ import {
 } from '../public/shared/math.js';
 import { priorLogs, buildContext, dvpFactor, dvpTable, project, estimate, normalizePos } from '../server/model.js';
 import { parseProps, parseGameLog } from '../server/espn.js';
-import { cleanRows, scan } from '../server/lines.js';
+import { bookRows, cleanRows, scan } from '../server/lines.js';
 
 const near = (a, b, eps = 1e-6) => assert.ok(Math.abs(a - b) < eps, `${a} !~ ${b}`);
 
@@ -189,4 +189,23 @@ test('scan reports no arbitrage on a normal market and finds middles', () => {
   assert.equal(middles[0].a.name, 'Over 220.5');
   assert.equal(middles[0].b.name, 'Under 222.5');
   assert.equal(middles[0].width, 2);
+});
+
+test('bookRows flattens the v2 odds feed, preferring pregame main lines', () => {
+  const side = (s, odds, value, extra = {}) => ({ side: s, odds, value, is_live: false, is_alt_market: false, ...extra });
+  const [row] = bookRows({
+    markets: {
+      68: {
+        event: {
+          moneyline: [side('away', -124, 0), side('home', 105, 0)],
+          spread: [side('home', -106, 1.5), side('away', -114, -1.5), side('away', 150, -6.5, { is_alt_market: true })],
+          total: [side('over', -140, 210.5, { is_live: true }), side('over', -113, 216.5), side('under', -107, 216.5)],
+        },
+      },
+    },
+  });
+  assert.deepEqual(row, {
+    book_id: 68, ml_away: -124, ml_home: 105, spread_away: -1.5, spread_away_line: -114,
+    spread_home_line: -106, total: 216.5, over: -113, under: -107,
+  });
 });

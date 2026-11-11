@@ -54,6 +54,31 @@ const parseRow = (o) => ({
   under: o.under ?? null,
 });
 
+// The v2 feed groups odds by book, then by market, with one entry per side. Flatten
+// each book back into the single row parseRow reads, preferring pregame main lines.
+export function bookRows(game) {
+  return Object.entries(game.markets ?? {}).map(([bookId, { event = {} }]) => {
+    const pick = (list, side) => {
+      const options = (list ?? []).filter((o) => o.side === side && !o.is_alt_market);
+      return options.find((o) => !o.is_live) ?? options[0];
+    };
+    const spreadAway = pick(event.spread, 'away');
+    const over = pick(event.total, 'over');
+    const under = pick(event.total, 'under');
+    return {
+      book_id: Number(bookId),
+      ml_away: pick(event.moneyline, 'away')?.odds,
+      ml_home: pick(event.moneyline, 'home')?.odds,
+      spread_away: spreadAway?.value,
+      spread_away_line: spreadAway?.odds,
+      spread_home_line: pick(event.spread, 'home')?.odds,
+      total: over?.value ?? under?.value,
+      over: over?.odds,
+      under: under?.odds,
+    };
+  });
+}
+
 const bestOf = (rows, field) =>
   rows.reduce((best, r) => {
     if (r[field] == null) return best;
@@ -153,14 +178,14 @@ export function gameLines(date) {
   return cached(`lines-${date}`, 2 * MIN, async () => {
     const ids = [CONSENSUS, OPENER, ...Object.keys(BOOKS)].join(',');
     const data = await getJson(
-      `https://api.actionnetwork.com/web/v1/scoreboard/nba?period=game&bookIds=${ids}&date=${date.replaceAll('-', '')}`,
+      `https://api.actionnetwork.com/web/v2/scoreboard/nba?period=game&bookIds=${ids}&date=${date.replaceAll('-', '')}`,
     );
     const games = (data.games || []).map((g) => {
       const team = (id) => {
         const t = g.teams.find((x) => x.id === id);
         return { abbr: t?.abbr, name: t?.full_name, nickname: nickname(t?.full_name) };
       };
-      const rows = (g.odds || []).filter((o) => o.type === 'game');
+      const rows = bookRows(g);
       const of = (id) => {
         const row = rows.find((o) => o.book_id === id);
         return row ? parseRow(row) : null;

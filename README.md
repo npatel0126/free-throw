@@ -98,7 +98,20 @@ npm run backtest
 
 ## Deploying
 
-Free Throw needs a host that keeps a Node server running. Static or serverless hosts like Vercel and Netlify only publish the `public/` folder, so the page loads but every `/api/` request fails with "This page couldn't load".
+The request handling lives in `server/app.js`. `server/index.js` runs it as a normal server, and `api/handler.js` runs it as a Vercel Function.
+
+### Vercel (free)
+
+The repo includes a `vercel.json` that sends every `/api/` request to `api/handler.js`. Vercel serves `public/` as the static site.
+
+1. At [vercel.com/new](https://vercel.com/new), import the `free-throw` repo. Leave the framework as **Other** and the build settings empty.
+2. Click **Deploy**.
+
+Every push to `main` deploys again automatically. With the [Vercel CLI](https://vercel.com/docs/cli) you can also deploy from your machine with `vercel --prod`.
+
+On Vercel, the cache lives in the function's temporary `/tmp` storage and resets whenever Vercel starts a fresh instance. When that happens, the first request waits for the board to build (usually a few seconds) instead of showing progress.
+
+Host-only settings like `HOST` don't apply on Vercel. If the site loads but says "This page couldn't load", the `/api/` requests aren't reaching the function: check that `vercel.json` and `api/handler.js` are in the deployed commit.
 
 ### Render (free)
 

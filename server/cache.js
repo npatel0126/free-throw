@@ -7,7 +7,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
-export const CACHE_DIR = process.env.CACHE_DIR || join(ROOT, '.cache');
+// Vercel Functions can only write to /tmp.
+export const CACHE_DIR = process.env.CACHE_DIR || (process.env.VERCEL ? '/tmp/freethrow-cache' : join(ROOT, '.cache'));
 mkdirSync(CACHE_DIR, { recursive: true });
 
 export const MIN = 60_000;

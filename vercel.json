@@ -1,0 +1,7 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [{ "source": "/api/:route(.*)", "destination": "/api/handler?route=:route" }],
+  "functions": {
+    "api/handler.js": { "maxDuration": 60 }
+  }
+}

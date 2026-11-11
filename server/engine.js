@@ -228,6 +228,14 @@ export function board(date) {
   return { data: state.data, building: !!state.job, progress: state.progress, error: state.error };
 }
 
+// Like board(), but when nothing has been built yet it waits for the first build.
+export async function boardReady(date) {
+  const now = board(date);
+  if (now.data || !now.building) return now;
+  await boards.get(date).job;
+  return board(date);
+}
+
 export async function slate(date) {
   const [games, injured, dir] = await Promise.all([scoreboard(date), injuries(), directory()]);
   return {
